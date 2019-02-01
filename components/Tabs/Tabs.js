@@ -1,51 +1,35 @@
-class TabLink {
-  constructor(tabElement) {
-    this.tabElement = tabElement
-    this.tabData = this.tabElement.dataset.tab
-    if (this.tabData === "all") {
-      this.cards = [...document.querySelectorAll(".card")]
-    } else {
-      this.cards = [...document.querySelectorAll(".card")].filter(
-        ({ dataset: { tab } }) => tab === this.tabData
-      )
-    }
-    this.cards = this.cards.map(TabCard.of)
-    this.tabElement.addEventListener("click", () => {
-      this.selectTab()
-    })
-  }
-
-  static of(element) {
-    return new TabLink(element)
-  }
-
-  selectTab() {
-    const tabs = document.querySelectorAll(".tab")
-    tabs.forEach(({ classList: cl }) => {
-      cl.remove("active-tab")
-    })
-    const cards = document.querySelectorAll(".card")
-    cards.forEach(({ style: s }) => {
-      s.display = "none"
-    })
-    this.tabElement.classList.add("active-tab")
-    this.cards.forEach(card => card.selectCard())
-  }
+const tabs = document.querySelectorAll(".tab")
+const cards = document.querySelectorAll(".card")
+const showCard = tab => {
+  cards.forEach(({ dataset, style }) => {
+    tab === "all"
+      ? (style.display = "flex")
+      : dataset.tab === tab && (style.display = "flex")
+  })
 }
-
-class TabCard {
-  constructor(cardElement) {
-    this.cardElement = cardElement
-  }
-
-  static of(element) {
-    return new TabCard(element)
-  }
-
-  selectCard() {
-    this.cardElement.style.display = "flex"
-  }
+const selectTab = tab => {
+  tabs.forEach(({ dataset, classList }) => {
+    dataset.tab === tab && classList.add("active-tab")
+  })
 }
-
-let tabs = document.querySelectorAll(".tab")
-tabs.forEach(TabLink.of)
+const hideCard = tab => {
+  cards.forEach(({ dataset, style }) => {
+    tab === "all"
+      ? (style.display = "none")
+      : dataset.tab === tab && (style.display = "none")
+  })
+}
+const deselectTab = tab => {
+  tabs.forEach(({ dataset, classList }) => {
+    dataset.tab === tab && classList.remove("active-tab")
+  })
+}
+const main = (current, last = false) => {
+  last && (hideCard(last) && deselectTab(last))
+  showCard(current)
+  deselectTab(current)
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => main(tab.dataset.tab, current))
+  })
+}
+main("all")
