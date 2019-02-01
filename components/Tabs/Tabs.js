@@ -28,7 +28,9 @@
     last && hide(last)
     show(current)
     tabs.forEach(tab => {
-      tab.addEventListener("click", () => run(tab.dataset.tab, current))
+      tab.addEventListener("click", () => run(tab.dataset.tab, current), {
+        once: true
+      })
     })
   }
 

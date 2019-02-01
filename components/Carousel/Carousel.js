@@ -6,15 +6,20 @@
   const imgList = carousel.querySelectorAll("img")
   const length = imgList.length
   const [left, right] = [...carousel.querySelectorAll("[class$='button']")]
+
   const run = (current = 0, last) => {
     last !== undefined && (imgList[last].style.display = "none")
     imgList[current].style.display = "block"
-    left.addEventListener("click", () => {
-      run(mod(current - 1, length), current)
-    })
-    right.addEventListener("click", () => {
-      run(mod(current + 1, length), current)
-    })
+    left.addEventListener(
+      "click",
+      () => run(mod(current - 1, length), current),
+      { once: true }
+    )
+    right.addEventListener(
+      "click",
+      () => run(mod(current + 1, length), current),
+      { once: true }
+    )
   }
   run()
 })()
